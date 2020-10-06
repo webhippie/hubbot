@@ -7,21 +7,6 @@ platform:
   arch: amd64
 
 steps:
-- name: dryrun
-  image: plugins/docker
-  settings:
-    build_args:
-    - BUILD_VERSION=${DRONE_TAG%-*}
-    dockerfile: Dockerfile
-    dry_run: true
-    password:
-      from_secret: docker_password
-    repo: webhippie/${DRONE_REPO_NAME}
-    username:
-      from_secret: docker_username
-  when:
-    ref:
-    - refs/pull/**
 
 - name: tags
   image: alpine
@@ -35,44 +20,13 @@ steps:
   settings:
     build_args:
     - BUILD_VERSION=${DRONE_TAG%-*}
+    repo: webhippie/${DRONE_REPO_NAME}
     dockerfile: Dockerfile
     password:
       from_secret: docker_password
-    repo: webhippie/${DRONE_REPO_NAME}
     username:
       from_secret: docker_username
-  when:
-    ref:
-    - refs/heads/master
-    - refs/tags/**
 
-- name: release
-  image: plugins/github-release
-  settings:
-    api_key:
-      from_secret: github_token
-    note: CHANGELOG.md
-    overwrite: true
-    title: ${DRONE_TAG}
-  when:
-    ref:
-    - refs/tags/**
-
-trigger:
-  ref:
-  - refs/heads/master
-  - refs/tags/**
-  - refs/pull/**
-
----
-kind: pipeline
-name: notifications
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
 - name: readme
   image: sheogorath/readme-to-dockerhub
   environment:
@@ -83,16 +37,3 @@ steps:
     DOCKERHUB_USERNAME:
       from_secret: docker_username
     README_PATH: README.md
-
-trigger:
-  ref:
-  - refs/heads/master
-  - refs/tags/**
-  status:
-  - success
-  - failure
-
-depends_on:
-- container
-
-...
