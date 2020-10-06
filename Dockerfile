@@ -10,7 +10,7 @@ RUN apk update && \
 	rm -rf /var/cache/apk/*
 
 WORKDIR /hubbot
-RUN go build src/main -o ../bin/hubbot
+RUN go build src/main -o bin/hubbot
 
 
 FROM amd64/alpine:3
