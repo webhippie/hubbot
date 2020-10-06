@@ -1,4 +1,4 @@
-module bot
+module github.com/webhippie/hubbot
 
 go 1.15
 
