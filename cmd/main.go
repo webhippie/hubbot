@@ -29,17 +29,18 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch e := event.(type) {
-	case *github.PushEvent:
-		log.Println("Push Event")
 	case *github.IssueCommentEvent:
-		log.Println("Issue Comment Event")
+		log.Println("Issue Comment Event Action", *e.Action)
+		log.Println("User:", *e.Sender.Login)
+		log.Println("Comment:", *e.Comment.Body)
+
 	case *github.CommitCommentEvent:
 		log.Println("Commit Comment Event")
+	case *github.PushEvent:
+		log.Println("Push Event")
 	case *github.PullRequestEvent:
 		log.Println("Pull Request Event")
 	case *github.WatchEvent:
-		// https://developer.github.com/v3/activity/events/types/#watchevent
-		// someone starred our repository
 		if e.Action != nil && *e.Action == "starred" {
 			fmt.Printf("%s starred repository %s\n",
 				*e.Sender.Login, *e.Repo.FullName)
