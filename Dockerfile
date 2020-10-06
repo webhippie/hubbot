@@ -6,11 +6,11 @@ ENV GOOS=linux
 
 RUN apk update && \
 	apk upgrade && \
-	apk add make gcc bash && \
+	apk add gcc bash && \
 	rm -rf /var/cache/apk/*
 
-WORKDIR /hubbot/src
-RUN make clean generate build
+WORKDIR /hubbot
+RUN go build src/main -o ../bin/hubbot
 
 
 FROM amd64/alpine:3
