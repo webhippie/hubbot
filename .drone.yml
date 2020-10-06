@@ -1,0 +1,98 @@
+---
+kind: pipeline
+name: container
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: dryrun
+  image: plugins/docker
+  settings:
+    build_args:
+    - BUILD_VERSION=${DRONE_TAG%-*}
+    dockerfile: Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: webhippie/${DRONE_REPO_NAME}
+    username:
+      from_secret: docker_username
+  when:
+    ref:
+    - refs/pull/**
+
+- name: tags
+  image: alpine
+  commands:
+  - export BASE=${DRONE_TAG:-latest}
+  - export TAG=$${BASE##v}
+  - if [ "$$TAG" == "latest" ]; then echo -n "latest" > .tags; else echo -n "latest,$${TAG},$${TAG%-*},$${TAG%.*},$${TAG%%.*}" > .tags; fi
+
+- name: publish
+  image: plugins/docker
+  settings:
+    build_args:
+    - BUILD_VERSION=${DRONE_TAG%-*}
+    dockerfile: Dockerfile
+    password:
+      from_secret: docker_password
+    repo: webhippie/${DRONE_REPO_NAME}
+    username:
+      from_secret: docker_username
+  when:
+    ref:
+    - refs/heads/master
+    - refs/tags/**
+
+- name: release
+  image: plugins/github-release
+  settings:
+    api_key:
+      from_secret: github_token
+    note: CHANGELOG.md
+    overwrite: true
+    title: ${DRONE_TAG}
+  when:
+    ref:
+    - refs/tags/**
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/tags/**
+  - refs/pull/**
+
+---
+kind: pipeline
+name: notifications
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: readme
+  image: sheogorath/readme-to-dockerhub
+  environment:
+    DOCKERHUB_PASSWORD:
+      from_secret: docker_password
+    DOCKERHUB_REPO_NAME: ${DRONE_REPO_NAME}
+    DOCKERHUB_REPO_PREFIX: webhippie
+    DOCKERHUB_USERNAME:
+      from_secret: docker_username
+    README_PATH: README.md
+
+trigger:
+  ref:
+  - refs/heads/master
+  - refs/tags/**
+  status:
+  - success
+  - failure
+
+depends_on:
+- container
+
+...

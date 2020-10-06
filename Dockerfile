@@ -15,7 +15,7 @@ RUN make clean generate build
 
 FROM amd64/alpine:3
 
-LABEL maintainer="webhippie united" \
+LABEL maintainer="webhippie united mail@webhippie.de" \
   org.label-schema.name="webhippie hubbot" \
   org.label-schema.vendor="webhippie united" \
   org.label-schema.schema-version="0.1.0"
