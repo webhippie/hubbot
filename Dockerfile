@@ -15,6 +15,8 @@ RUN go build -o bin/hubbot ./cmd
 
 FROM amd64/alpine:3
 
+EXPOSE 8080
+
 LABEL maintainer="webhippie united mail@webhippie.de" \
   org.label-schema.name="webhippie hubbot" \
   org.label-schema.vendor="webhippie united" \
