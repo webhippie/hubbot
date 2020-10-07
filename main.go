@@ -51,14 +51,25 @@ func handleIssueCommitEvent(e *github.IssueCommentEvent) {
 
 	owner := "webhippie"
 	name := "hubbot"
+
 	build, err := droneClient.BuildLast(owner, name, "")
 	if err != nil {
 		log.Fatal(err)
 	}
 	number := int(build.Number)
 	
-	log.Println("Last Build", number)
-	log.Println(owner, name, build)
+	log.Println("Last Drone Build", number)
+	// log.Println("Drone Build", build)
+
+	if *e.Comment.Body == "/drone cancel" {
+		log.Println("Drone Build canceled")
+		droneClient.BuildCancel(owner, name, number)
+	}
+	if *e.Comment.Body == "/drone restart" {
+		log.Println("Drone Build restarted")
+		droneClient.BuildRestart(owner, name, number, nil)
+	}
+
 }
 
 func main() {
