@@ -1,6 +1,5 @@
 FROM golang:alpine as build
 
-COPY ./ /hubbot/
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
@@ -10,8 +9,8 @@ RUN apk update && \
 	rm -rf /var/cache/apk/*
 
 WORKDIR /hubbot
+COPY ./ /hubbot/
 RUN go build -o bin/hubbot ./cmd
-
 
 FROM amd64/alpine:3
 
