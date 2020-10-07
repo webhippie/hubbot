@@ -10,7 +10,7 @@ RUN apk update && \
 
 WORKDIR /hubbot
 COPY ./ /hubbot/
-RUN go build -o bin/hubbot ./cmd
+RUN go build -o bin/hubbot main.go
 
 FROM amd64/alpine:3
 

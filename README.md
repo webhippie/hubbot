@@ -5,7 +5,7 @@ bot for github in golang with fun
 ## Local dev
 
 ```
-go run cmd/main.go --help 
+go run main.go --help 
 ```
 
 ## Setup github webhook with ngrok domain for local server
@@ -35,7 +35,7 @@ docker run --rm -ti -e DRONE_TOKEN -e HUB_WEBHOOK_SECRET webhippie/hubbot:dev
 
 ```
 # build
-go build -o bin/hubbot ./cmd
+go build -o bin/hubbot main.go
 
 # run
 ./bin/hubbot --help

@@ -21,7 +21,7 @@ steps:
     build_args:
     - BUILD_VERSION=${DRONE_TAG%-*}
     repo: webhippie/${DRONE_REPO_NAME}
-    dockerfile: Dockerfile
+    dockerfile: deployments/Dockerfile
     password:
       from_secret: docker_password
     username:

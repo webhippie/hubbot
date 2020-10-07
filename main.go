@@ -4,7 +4,6 @@ import (
 	"os"
 	"log"
 	"flag"
-	"strings"
 	"reflect"
 	"net/http"
 	"github.com/google/go-github/github"
@@ -81,7 +80,6 @@ func main() {
 		log.Fatal("Error: you must provide your Drone access token.")
 	}
 
-	*drone_server = strings.TrimRight(*drone_server, "/")
 	config := new(oauth2.Config)
 	auther := config.Client(
 		oauth2.NoContext,
