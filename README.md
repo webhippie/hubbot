@@ -21,7 +21,7 @@ You can inspect and replay messages on http://127.0.0.1:4040/inspect/http
 
 ```
 # build
-docker build -t webhippie/hubbot:dev .
+docker build -t webhippie/hubbot:dev -f deplyoments/Dockerfile .
 
 # configure
 export DRONE_TOKEN=12345
