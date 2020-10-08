@@ -38,25 +38,17 @@ steps:
       from_secret: docker_username
     README_PATH: README.md
 
----
-  kind: pipeline
-  type: ssh
-  name: deployment
-
-  server:
+- name: deploy
+  image: appleboy/drone-scp
+  settings:
     host:
       from_secret: deployment_host
     user:
       from_secret: drone_user_name
-    password:
+      passphrase:
       from_secret: drone_user_password
-
-  steps:
-  - name: pull latest image
-    commands:
-    - docker pull webhippie/hubbot:latest
-
-  - name: restart compose stack
-    commands:
-    - docker-compose -f /opt/hubbot/docker-compose.yml down
-    - docker-compose f /opt/hubbot/docker-compose.yml up -d
+    port: 22
+    script:
+      - docker pull webhippie/hubbot:latest
+      - docker-compose -f /opt/hubbot/docker-compose.yml down
+      - docker-compose f /opt/hubbot/docker-compose.yml up -d
