@@ -43,9 +43,9 @@ steps:
   settings:
     host:
       from_secret: deployment_host
-    user:
+    username:
       from_secret: drone_user_name
-      passphrase:
+    password:
       from_secret: drone_user_password
     port: 22
     script:
