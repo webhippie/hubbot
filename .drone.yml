@@ -44,7 +44,8 @@ steps:
   name: deployment
 
   server:
-    host: 159.69.36.250
+    host:
+      from_secret: deployment_host
     user:
       from_secret: drone_user_name
     password:
