@@ -42,11 +42,11 @@ steps:
   image: appleboy/drone-ssh
   settings:
     host:
-      from_secret: deployment_host
+      from_secret: host
     username:
-      from_secret: drone_user_name
+      from_secret: user
     password:
-      from_secret: drone_user_password
+      from_secret: password
     port: 22
     script:
       - docker pull webhippie/hubbot:latest
