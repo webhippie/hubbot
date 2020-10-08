@@ -39,7 +39,7 @@ steps:
     README_PATH: README.md
 
 - name: deploy
-  image: appleboy/drone-scp
+  image: appleboy/drone-ssh
   settings:
     host:
       from_secret: deployment_host
