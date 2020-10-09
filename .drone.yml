@@ -50,5 +50,6 @@ steps:
     port: 22
     script:
       - docker pull webhippie/hubbot:latest
-      - docker-compose -f /opt/hubbot/docker-compose.yml down
-      - docker-compose -f /opt/hubbot/docker-compose.yml up -d
+      - cd /opt/hubbot
+      - docker-compose rm -sf hubbot
+      - docker-compose up -d hubbot
