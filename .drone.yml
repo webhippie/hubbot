@@ -7,6 +7,21 @@ platform:
   arch: amd64
 
 steps:
+- name: dryrun
+  image: plugins/docker
+  settings:
+    build_args:
+    - BUILD_VERSION=${DRONE_TAG%-*}
+    dockerfile: Dockerfile
+    dry_run: true
+    password:
+      from_secret: docker_password
+    repo: ${DRONE_REPO}
+    username:
+      from_secret: docker_username
+  when:
+    ref:
+    - refs/pull/**
 
 - name: tags
   image: alpine
@@ -26,6 +41,10 @@ steps:
       from_secret: docker_password
     username:
       from_secret: docker_username
+  when:
+    ref:
+    - refs/heads/main
+    - refs/tags/**
 
 - name: readme
   image: sheogorath/readme-to-dockerhub
@@ -37,6 +56,10 @@ steps:
     DOCKERHUB_USERNAME:
       from_secret: docker_username
     README_PATH: README.md
+  when:
+    ref:
+    - refs/heads/main
+    - refs/tags/**
 
 - name: deploy
   image: appleboy/drone-ssh
@@ -53,3 +76,13 @@ steps:
       - cd /opt/hubbot
       - docker-compose rm -sf hubbot
       - docker-compose up -d hubbot
+  when:
+    ref:
+    - refs/heads/main
+    - refs/tags/**
+
+trigger:
+  ref:
+  - refs/heads/main
+  - refs/tags/**
+  - refs/pull/**
