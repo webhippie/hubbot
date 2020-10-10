@@ -12,7 +12,7 @@ steps:
   settings:
     build_args:
     - BUILD_VERSION=${DRONE_TAG%-*}
-    dockerfile: Dockerfile
+    dockerfile: deployments/Dockerfile
     dry_run: true
     password:
       from_secret: docker_password
@@ -29,6 +29,10 @@ steps:
   - export BASE=${DRONE_TAG:-latest}
   - export TAG=$${BASE##v}
   - if [ "$$TAG" == "latest" ]; then echo -n "latest" > .tags; else echo -n "latest,$${TAG},$${TAG%-*},$${TAG%.*},$${TAG%%.*}" > .tags; fi
+  when:
+    ref:
+    - refs/heads/main
+    - refs/tags/**
 
 - name: publish
   image: plugins/docker

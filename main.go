@@ -1,65 +1,47 @@
 package main
 
 import (
-	"os"
 	"log"
-	"flag"
 	"net/http"
-	"github.com/pkg/errors"
+
+	"github.com/joho/godotenv"
+
 	// "github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 	"github.com/drone/drone-go/drone"
+	"github.com/webhippie/hubbot/pkg/config"
 	"github.com/webhippie/hubbot/pkg/webhookHandler"
+	"golang.org/x/oauth2"
 )
 
 type configuration struct {
 	hub_webhook_secret *string
-	drone_server *string
-	drone_token *string
+	drone_server       *string
+	drone_token        *string
+	drone_debug        *bool
 }
 
-func (c *configuration) parseEnv() (err error) {
-	c.hub_webhook_secret = flag.String("hub_webhook_secret", "", "Github webhook secret")
-	c.drone_server = flag.String("drone_server", "https://cloud.drone.io/", "Drone server")
-	c.drone_token = flag.String("drone_token", "", "Drone token")
-	flag.Parse()
-
-	if os.Getenv("HUB_WEBHOOK_SECRET") != "" {
-		*c.hub_webhook_secret = os.Getenv("HUB_WEBHOOK_SECRET")
-		log.Println("Using env HUB_WEBHOOK_SECRET")
+// init is invoked before main()
+func init() {
+	// loads values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		log.Print("No .env file found")
 	}
-	if os.Getenv("DRONE_SERVER") != "" {
-		*c.drone_server = os.Getenv("DRONE_SERVER")
-		log.Println("Using env DRONE_SERVER")
-	}
-	if os.Getenv("DRONE_TOKEN") != "" {
-		*c.drone_token = os.Getenv("DRONE_TOKEN")
-		log.Println("Using env DRONE_TOKEN")
-	}
-	if len(*c.drone_token) == 0 {
-		err = errors.New("Error: you must provide your Drone access token.")
-	}
-	return err
 }
 
 func main() {
-	c := new(configuration)
-	c.parseEnv()
+	c := config.New()
 
-	config := new(oauth2.Config)
-	auther := config.Client(
+	cfg := new(oauth2.Config)
+	auther := cfg.Client(
 		oauth2.NoContext,
 		&oauth2.Token{
-			AccessToken: *c.drone_token,
+			AccessToken: c.Drone.Token,
 		},
 	)
-	droneClient := drone.NewClient(*c.drone_server, auther)
-	// log.Println(droneClient.Self())
+	droneClient := drone.NewClient(c.Drone.Server, auther)
 
-	// githubClient := github.NewClient(nil)
-	
 	wh := new(webhookHandler.WebhookHandler)
-	wh.WebhookSecret = *c.hub_webhook_secret
+	wh.WebhookSecret = c.GitHub.WebhookSecret
 	wh.DroneClient = &droneClient
 
 	log.Println("server started")
